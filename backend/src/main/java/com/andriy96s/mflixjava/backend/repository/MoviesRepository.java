@@ -10,8 +10,10 @@ import com.mongodb.client.model.Sorts;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,15 +25,24 @@ import static com.mongodb.client.model.Projections.include;
 @Component
 public class MoviesRepository {
     private final MongoClient mongoClient;
+    MongoDatabase db;
+    @Value("${spring.data.mongodb.database}")
+    private String dbName;
+    @Value("${mongodb.collection.movies}")
+    private String moviesCollectionName;
 
     public MoviesRepository(@Qualifier("getMongoClient") MongoClient mongoClient) {
         this.mongoClient = mongoClient;
-        getTopMovies();
+
+    }
+    @PostConstruct
+    public void init() {
+        db = mongoClient.getDatabase(dbName);
     }
 
     public List<DBObject> getTopMovies() {
-        MongoDatabase db = mongoClient.getDatabase("mflix");
-        MongoCollection<Document> movies = db.getCollection("movies");
+
+        MongoCollection<Document> movies = db.getCollection(moviesCollectionName);
 
         Bson query = Filters.and(
                 nin("imdb.rating", null, ""),
@@ -39,8 +50,8 @@ public class MoviesRepository {
 
         FindIterable<Document> movieDocs = movies.find(query)
                 .sort(Sorts.descending("imdb.rating"))
-                .limit(10)
-                .projection(fields(include("title", "year", "imdb.rating")));
+                .limit(10);
+//                .projection(fields(include("title", "year", "imdb.rating")));
 
         var dboObjects = new ArrayList<DBObject>();
         for (Document document : movieDocs) {
@@ -49,6 +60,21 @@ public class MoviesRepository {
 //        limit.forEach(dboObjects::add);
 
         return null;
+    }
+
+
+    public List<Document> getMovies(int limit, int skip, Bson sort) {
+        MongoCollection<Document> moviesCollection = db.getCollection(moviesCollectionName);
+
+        FindIterable<Document> movieDocs = moviesCollection
+                .find()
+                .sort(sort)
+                .skip(skip)
+                .limit(limit);
+
+        List<Document> movies = new ArrayList<>();
+        movieDocs.iterator().forEachRemaining(movies::add);
+        return movies;
     }
 
 }
