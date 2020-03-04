@@ -4,10 +4,7 @@ import com.andriy96s.mflixjava.backend.dto.BasicMovieDto;
 import com.andriy96s.mflixjava.backend.service.MoviesService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -16,15 +13,31 @@ import java.util.List;
 @RequestMapping("/api/movies")
 public class MoviesController {
 
+    private static final int MOVIES_PER_PAGE = 24;
+
     final MoviesService moviesService;
 
     public MoviesController(MoviesService moviesService) {
         this.moviesService = moviesService;
-        moviesService.getAllMovies();
     }
 
     @GetMapping
     public ResponseEntity<List<BasicMovieDto>> getAllMovies() {
-        return new ResponseEntity<>(moviesService.getAllMovies(), HttpStatus.OK);
+        return new ResponseEntity<>(moviesService.getAllMoviesPaginated(MOVIES_PER_PAGE, 0), HttpStatus.OK);
+    }
+
+    @GetMapping("/page/{pageNumber}")
+    public ResponseEntity<List<BasicMovieDto>> getMoviesForPage(@PathVariable String pageNumber) {
+        int pageNumerInt;
+        try {
+            pageNumerInt = Integer.parseInt(pageNumber);
+            if(pageNumerInt<0) {
+                throw new NumberFormatException("Page number should not be negative");
+            }
+        } catch (NumberFormatException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(moviesService.getAllMoviesPaginated(MOVIES_PER_PAGE, MOVIES_PER_PAGE*(pageNumerInt-1)), HttpStatus.OK);
     }
 }

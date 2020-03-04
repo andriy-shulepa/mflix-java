@@ -16,8 +16,8 @@ public class MoviesService {
         this.moviesRepository = moviesRepository;
     }
 
-    public List<BasicMovieDto> getAllMovies() {
+    public List<BasicMovieDto> getAllMoviesPaginated(int moviesPerPage, int moviesToSkp) {
         return MovieMapper.toBasicMovieDto(
-                moviesRepository.getMovies(100, 0, Sorts.descending("imdb.rating")));
+                moviesRepository.getMovies(moviesPerPage, moviesToSkp, Sorts.descending("imdb.rating")));
     }
 }
