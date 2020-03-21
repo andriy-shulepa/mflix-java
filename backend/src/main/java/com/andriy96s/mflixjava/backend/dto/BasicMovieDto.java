@@ -6,7 +6,9 @@ import java.util.List;
 
 @Data
 public class BasicMovieDto {
+    private String id;
     private String title;
+    private String shortDescription;
     private int year;
     private int runtime;
     private String poster;

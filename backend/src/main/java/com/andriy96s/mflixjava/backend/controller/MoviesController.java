@@ -1,6 +1,7 @@
 package com.andriy96s.mflixjava.backend.controller;
 
 import com.andriy96s.mflixjava.backend.dto.BasicMovieDto;
+import com.andriy96s.mflixjava.backend.dto.DetailMovieDto;
 import com.andriy96s.mflixjava.backend.service.MoviesService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,5 +40,10 @@ public class MoviesController {
         }
 
         return new ResponseEntity<>(moviesService.getAllMoviesPaginated(MOVIES_PER_PAGE, MOVIES_PER_PAGE*(pageNumerInt-1)), HttpStatus.OK);
+    }
+
+    @GetMapping("/movie/{movieId}")
+    public ResponseEntity<DetailMovieDto> getMovieDetails(@PathVariable String movieId) {
+        return new ResponseEntity<>(moviesService.getMovieDetails(movieId), HttpStatus.OK);
     }
 }

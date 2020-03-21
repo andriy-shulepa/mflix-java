@@ -1,6 +1,7 @@
 package com.andriy96s.mflixjava.backend.service;
 
 import com.andriy96s.mflixjava.backend.dto.BasicMovieDto;
+import com.andriy96s.mflixjava.backend.dto.DetailMovieDto;
 import com.andriy96s.mflixjava.backend.dto.MovieMapper;
 import com.andriy96s.mflixjava.backend.repository.MoviesRepository;
 import com.mongodb.client.model.Sorts;
@@ -17,7 +18,13 @@ public class MoviesService {
     }
 
     public List<BasicMovieDto> getAllMoviesPaginated(int moviesPerPage, int moviesToSkp) {
-        return MovieMapper.toBasicMovieDto(
+        return MovieMapper.toBasicMovieDtos(
                 moviesRepository.getMovies(moviesPerPage, moviesToSkp, Sorts.descending("imdb.rating")));
+    }
+
+    public DetailMovieDto getMovieDetails(String movieId) {
+        return MovieMapper.toDetailMovieDto(
+                moviesRepository.getMovie(movieId)
+        );
     }
 }

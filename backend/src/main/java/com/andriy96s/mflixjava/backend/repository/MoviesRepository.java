@@ -9,6 +9,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -77,4 +78,11 @@ public class MoviesRepository {
         return movies;
     }
 
+    public Document getMovie(String movieId) {
+        MongoCollection<Document> moviesCollection = db.getCollection(moviesCollectionName);
+
+        Bson query = Filters.eq("_id", new ObjectId(movieId));
+
+        return moviesCollection.find(query).first();
+    }
 }
