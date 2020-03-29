@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
@@ -28,22 +29,19 @@ public class MoviesController {
     }
 
     @GetMapping("/page/{pageNumber}")
-    public ResponseEntity<List<BasicMovieDto>> getMoviesForPage(@PathVariable String pageNumber) {
-        int pageNumerInt;
-        try {
-            pageNumerInt = Integer.parseInt(pageNumber);
-            if(pageNumerInt<0) {
-                throw new NumberFormatException("Page number should not be negative");
-            }
-        } catch (NumberFormatException e) {
-            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<List<BasicMovieDto>> getMoviesForPage(@PathVariable @Min(0) Integer pageNumber) {
 
-        return new ResponseEntity<>(moviesService.getAllMoviesPaginated(MOVIES_PER_PAGE, MOVIES_PER_PAGE*(pageNumerInt-1)), HttpStatus.OK);
+        return new ResponseEntity<>(moviesService.getAllMoviesPaginated(MOVIES_PER_PAGE, MOVIES_PER_PAGE*(pageNumber-1)), HttpStatus.OK);
     }
 
     @GetMapping("/movie/{movieId}")
     public ResponseEntity<DetailMovieDto> getMovieDetails(@PathVariable String movieId) {
         return new ResponseEntity<>(moviesService.getMovieDetails(movieId), HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<BasicMovieDto>> searchMovie(@RequestParam String text,
+                                                           @RequestParam(required = false, defaultValue = "0") @Min(0) Integer page) {
+        return new ResponseEntity<>(moviesService.searchForMovie(text, MOVIES_PER_PAGE, MOVIES_PER_PAGE*(page-1)), HttpStatus.OK);
     }
 }

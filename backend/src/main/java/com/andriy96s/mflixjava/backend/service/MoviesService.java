@@ -27,4 +27,9 @@ public class MoviesService {
                 moviesRepository.getMovie(movieId)
         );
     }
+
+    public List<BasicMovieDto> searchForMovie(String searchText, int moviesPerPage, int moviesToSkp) {
+        return MovieMapper.toBasicMovieDtos(
+                moviesRepository.searchForMovie(searchText, moviesPerPage, moviesToSkp, Sorts.descending("imdb.rating")));
+    }
 }

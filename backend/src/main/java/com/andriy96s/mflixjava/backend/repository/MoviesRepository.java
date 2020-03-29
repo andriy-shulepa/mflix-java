@@ -85,4 +85,19 @@ public class MoviesRepository {
 
         return moviesCollection.find(query).first();
     }
+
+    public List<Document> searchForMovie(String searchText, int limit, int skip, Bson sort) {
+        MongoCollection<Document> moviesCollection = db.getCollection(moviesCollectionName);
+        Bson query = Filters.text( searchText);
+
+        FindIterable<Document> movieDocs = moviesCollection
+                .find(query)
+                .sort(sort)
+                .skip(skip)
+                .limit(limit);
+
+        List<Document> movies = new ArrayList<>();
+        movieDocs.iterator().forEachRemaining(movies::add);
+        return movies;
+    }
 }
