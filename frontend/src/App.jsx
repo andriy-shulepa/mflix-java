@@ -9,9 +9,12 @@ import {
 } from "react-router-dom";
 import Home from "./components/Home";
 import MovieDetails from "./components/MovieDetails";
+import Navbar from "./components/Navbar";
 
 export default function App() {
     return (
+        <div>
+        <Navbar/>
         <Router>
             <Switch>
                 <Route path="/movie">
@@ -22,5 +25,6 @@ export default function App() {
                 </Route>
             </Switch>
         </Router>
+        </div>
     );
 }

@@ -11,7 +11,7 @@ import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3001")
+@CrossOrigin(origins = {"http://localhost:3001","http://localhost:3000"})
 @RequestMapping("/api/movies")
 public class MoviesController {
 
