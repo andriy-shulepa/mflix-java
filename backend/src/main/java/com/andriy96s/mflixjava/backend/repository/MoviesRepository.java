@@ -100,4 +100,12 @@ public class MoviesRepository {
         movieDocs.iterator().forEachRemaining(movies::add);
         return movies;
     }
+
+    public long getMoviesCount(String searchText) {
+        MongoCollection<Document> moviesCollection = db.getCollection(moviesCollectionName);
+        return searchText == null ?
+                moviesCollection.countDocuments() :
+                moviesCollection.countDocuments(Filters.text( searchText));
+
+    }
 }

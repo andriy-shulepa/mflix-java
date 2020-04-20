@@ -3,6 +3,7 @@ package com.andriy96s.mflixjava.backend.service;
 import com.andriy96s.mflixjava.backend.dto.BasicMovieDto;
 import com.andriy96s.mflixjava.backend.dto.DetailMovieDto;
 import com.andriy96s.mflixjava.backend.dto.MovieMapper;
+import com.andriy96s.mflixjava.backend.dto.MoviesResultDto;
 import com.andriy96s.mflixjava.backend.repository.MoviesRepository;
 import com.mongodb.client.model.Sorts;
 import org.springframework.stereotype.Service;
@@ -17,9 +18,15 @@ public class MoviesService {
         this.moviesRepository = moviesRepository;
     }
 
-    public List<BasicMovieDto> getAllMoviesPaginated(int moviesPerPage, int moviesToSkp) {
-        return MovieMapper.toBasicMovieDtos(
+    public MoviesResultDto getAllMoviesPaginated(int moviesPerPage, int moviesToSkp) {
+        List<BasicMovieDto> basicMovieDtos = MovieMapper.toBasicMovieDtos(
                 moviesRepository.getMovies(moviesPerPage, moviesToSkp, Sorts.descending("imdb.rating")));
+
+        MoviesResultDto result = new MoviesResultDto();
+        result.setMoviesPaginated(basicMovieDtos);
+        result.setTotalMoviesCount(moviesRepository.getMoviesCount(null));
+
+        return result;
     }
 
     public DetailMovieDto getMovieDetails(String movieId) {
@@ -28,8 +35,14 @@ public class MoviesService {
         );
     }
 
-    public List<BasicMovieDto> searchForMovie(String searchText, int moviesPerPage, int moviesToSkp) {
-        return MovieMapper.toBasicMovieDtos(
+    public MoviesResultDto searchForMovie(String searchText, int moviesPerPage, int moviesToSkp) {
+        List<BasicMovieDto> basicMovieDtos = MovieMapper.toBasicMovieDtos(
                 moviesRepository.searchForMovie(searchText, moviesPerPage, moviesToSkp, Sorts.descending("imdb.rating")));
+
+        MoviesResultDto result = new MoviesResultDto();
+        result.setMoviesPaginated(basicMovieDtos);
+        result.setTotalMoviesCount(moviesRepository.getMoviesCount(searchText));
+
+        return result;
     }
 }

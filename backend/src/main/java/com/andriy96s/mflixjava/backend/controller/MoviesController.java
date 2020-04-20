@@ -1,17 +1,16 @@
 package com.andriy96s.mflixjava.backend.controller;
 
-import com.andriy96s.mflixjava.backend.dto.BasicMovieDto;
 import com.andriy96s.mflixjava.backend.dto.DetailMovieDto;
+import com.andriy96s.mflixjava.backend.dto.MoviesResultDto;
 import com.andriy96s.mflixjava.backend.service.MoviesService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Min;
-import java.util.List;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:3001","http://localhost:3000"})
+@CrossOrigin(origins = {"http://localhost:3001", "http://localhost:3000"})
 @RequestMapping("/api/movies")
 public class MoviesController {
 
@@ -24,14 +23,14 @@ public class MoviesController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BasicMovieDto>> getAllMovies() {
+    public ResponseEntity<MoviesResultDto> getAllMovies() {
         return new ResponseEntity<>(moviesService.getAllMoviesPaginated(MOVIES_PER_PAGE, 0), HttpStatus.OK);
     }
 
     @GetMapping("/page/{pageNumber}")
-    public ResponseEntity<List<BasicMovieDto>> getMoviesForPage(@PathVariable @Min(0) Integer pageNumber) {
+    public ResponseEntity<MoviesResultDto> getMoviesForPage(@PathVariable @Min(0) Integer pageNumber) {
 
-        return new ResponseEntity<>(moviesService.getAllMoviesPaginated(MOVIES_PER_PAGE, MOVIES_PER_PAGE*(pageNumber-1)), HttpStatus.OK);
+        return new ResponseEntity<>(moviesService.getAllMoviesPaginated(MOVIES_PER_PAGE, MOVIES_PER_PAGE * (pageNumber - 1)), HttpStatus.OK);
     }
 
     @GetMapping("/movie/{movieId}")
@@ -40,8 +39,8 @@ public class MoviesController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<BasicMovieDto>> searchMovie(@RequestParam String text,
-                                                           @RequestParam(required = false, defaultValue = "0") @Min(0) Integer page) {
-        return new ResponseEntity<>(moviesService.searchForMovie(text, MOVIES_PER_PAGE, MOVIES_PER_PAGE*(page-1)), HttpStatus.OK);
+    public ResponseEntity<MoviesResultDto> searchMovie(@RequestParam String text,
+                                                       @RequestParam(required = false, defaultValue = "0") @Min(0) Integer page) {
+        return new ResponseEntity<>(moviesService.searchForMovie(text, MOVIES_PER_PAGE, MOVIES_PER_PAGE * (page - 1)), HttpStatus.OK);
     }
 }

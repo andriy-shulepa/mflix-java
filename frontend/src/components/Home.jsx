@@ -4,6 +4,8 @@ import React from "react";
 import Search from "./Search";
 
 class Home extends React.Component {
+
+    MOVIES_PER_PAGE = 24;
     constructor(props) {
         super(props);
 
@@ -40,13 +42,16 @@ class Home extends React.Component {
                 <div className="py-5">
                     <Search onClick={(text) => this.getMovies(text, 1)}/>
                     <div className="container">
+                        <h4>Total movies found: {this.state.totalCount}</h4>
                         <div className="row">
                             {movies.map(movie => this.renderMovieCard(movie))}
                         </div>
                     </div>
                     <div className="container py-3 align-content-center">
                         <Pagination onClick={(i) => this.getMovies(this.state.search, i)}
-                                    currentPage={this.state.currentPage}/>
+                                    currentPage={this.state.currentPage}
+                                    totalCount={this.state.totalCount}
+                                    moviesPerPage={this.MOVIES_PER_PAGE}/>
                     </div>
                 </div>
             )
@@ -59,7 +64,8 @@ class Home extends React.Component {
                 (result) => {
                     this.setState({
                         isLoaded: true,
-                        movies: result,
+                        movies: result.moviesPaginated,
+                        totalCount: result.totalMoviesCount,
                         currentPage: page,
                         search: search,
                     });

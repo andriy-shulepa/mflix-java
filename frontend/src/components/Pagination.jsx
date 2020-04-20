@@ -3,19 +3,17 @@ import React from "react";
 class Pagination extends React.Component{
 
     renderPageNumber(i) {
-        if(i<1) {
+        if(i<1|| i>this.getMaxPage()) {
             return;
         }
 
         if(i=== this.props.currentPage) {
-            console.log("i=== this.props.currentPage");
             return (
                 <li className="page-item active">
                     <a className="page-link" onClick={() => this.props.onClick(i)}>{i}</a>
                 </li>
             );
         } else {
-            console.log("i !=== this.props.currentPage");
             return (
                 <li className="page-item">
                     <a className="page-link" onClick={() => this.props.onClick(i)}>{i}</a>
@@ -23,6 +21,10 @@ class Pagination extends React.Component{
             );
         }
 
+    }
+
+    getMaxPage() {
+        return Math.ceil(this.props.totalCount/this.props.moviesPerPage);
     }
 
 
@@ -33,7 +35,7 @@ class Pagination extends React.Component{
             <ul className="pagination justify-content-center" >
                 <li className={i===1 ? "page-item disabled" : "page-item"}>
                     <a className="page-link" onClick={() => {
-                        if(i===1 || i===this.props.currentPage) return;
+                        if(i===1) return;
                         this.props.onClick(i-1)}
                     }>&laquo;</a>
                 </li>
@@ -42,8 +44,11 @@ class Pagination extends React.Component{
                 {this.renderPageNumber(i)}
                 {this.renderPageNumber(i+1)}
                 {this.renderPageNumber(i+2)}
-                <li className="page-item">
-                    <a className="page-link" onClick={() => this.props.onClick(i+1)}>&raquo;</a>
+                <li className={i===this.getMaxPage() ? "page-item disabled" : "page-item"}>
+                    <a className="page-link" onClick={() => {
+                        if(i===this.getMaxPage()) return;
+                        this.props.onClick(i+1)
+                    }}>&raquo;</a>
                 </li>
             </ul>
         </div>
