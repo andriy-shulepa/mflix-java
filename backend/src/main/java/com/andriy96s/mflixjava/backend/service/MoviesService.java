@@ -6,9 +6,12 @@ import com.andriy96s.mflixjava.backend.dto.MovieMapper;
 import com.andriy96s.mflixjava.backend.dto.MoviesResultDto;
 import com.andriy96s.mflixjava.backend.repository.MoviesRepository;
 import com.mongodb.client.model.Sorts;
+import org.bson.Document;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MoviesService {
@@ -44,5 +47,18 @@ public class MoviesService {
         result.setTotalMoviesCount(moviesRepository.getMoviesCount(searchText));
 
         return result;
+    }
+
+    public Map<String, ?> getFacetInfo() {
+        Document facetInfo = moviesRepository.getFacetInfo().get(0);
+
+
+        Map<String, Object> results = new HashMap<>();
+
+        results.put("genres", facetInfo.get("genres"));
+        results.put("rated", facetInfo.get("rated"));
+        results.put("countries", facetInfo.get("countries"));
+        results.put("languages", facetInfo.get("languages"));
+        return results;
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Min;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = {"http://localhost:3001", "http://localhost:3000"})
@@ -42,5 +43,10 @@ public class MoviesController {
     public ResponseEntity<MoviesResultDto> searchMovie(@RequestParam String text,
                                                        @RequestParam(required = false, defaultValue = "0") @Min(0) Integer page) {
         return new ResponseEntity<>(moviesService.searchForMovie(text, MOVIES_PER_PAGE, MOVIES_PER_PAGE * (page - 1)), HttpStatus.OK);
+    }
+
+    @GetMapping("/facet-info")
+    public ResponseEntity<Map<String, ?>> getFacetInfo() {
+        return ResponseEntity.ok(moviesService.getFacetInfo());
     }
 }
