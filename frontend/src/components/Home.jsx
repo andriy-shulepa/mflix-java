@@ -2,10 +2,12 @@ import MovieCard from "./MovieCard";
 import Pagination from "./Pagination";
 import React from "react";
 import Search from "./Search";
+import Facets from "./Facets";
 
 class Home extends React.Component {
 
     MOVIES_PER_PAGE = 24;
+
     constructor(props) {
         super(props);
 
@@ -18,7 +20,7 @@ class Home extends React.Component {
     }
 
     componentDidMount() {
-        this.getMovies(null,1);
+        this.getMovies(null, 1);
     }
 
     renderMovieCard(movie) {
@@ -39,12 +41,21 @@ class Home extends React.Component {
             return <div className="text-info">Loading...</div>
         } else
             return (
-                <div className="py-5">
-                    <Search onClick={(text) => this.getMovies(text, 1)}/>
+                <div className="p-4">
+                    <div className="mb-2">
+                        <Search onClick={(text) => this.getMovies(text, 1)}/>
+                    </div>
                     <div className="container">
-                        <h4>Total movies found: {this.state.totalCount}</h4>
                         <div className="row">
-                            {movies.map(movie => this.renderMovieCard(movie))}
+                            <div className="col-lg-3">
+                                <Facets/>
+                            </div>
+                            <div className="col-lg-9">
+                                <h4>Total movies found: {this.state.totalCount}</h4>
+                                <div className="row">
+                                    {movies.map(movie => this.renderMovieCard(movie))}
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div className="container py-3 align-content-center">
@@ -82,10 +93,10 @@ class Home extends React.Component {
     }
 
     fetchMovies(search, page) {
-        if(search) {
-            return fetch("http://localhost:8080/api/movies/search?text=" + search+"&page="+page);
+        if (search) {
+            return fetch("http://localhost:8080/api/movies/search?text=" + search + "&page=" + page);
         } else {
-            return  fetch("http://localhost:8080/api/movies/page/" + page);
+            return fetch("http://localhost:8080/api/movies/page/" + page);
         }
     }
 }
