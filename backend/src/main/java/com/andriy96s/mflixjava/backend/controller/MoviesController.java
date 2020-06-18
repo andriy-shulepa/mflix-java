@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Min;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -40,9 +42,30 @@ public class MoviesController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<MoviesResultDto> searchMovie(@RequestParam String text,
-                                                       @RequestParam(required = false, defaultValue = "0") @Min(0) Integer page) {
-        return new ResponseEntity<>(moviesService.searchForMovie(text, MOVIES_PER_PAGE, MOVIES_PER_PAGE * (page - 1)), HttpStatus.OK);
+    public ResponseEntity<MoviesResultDto> searchMovie(@RequestParam(required = false) String text,
+                                                       @RequestParam(required = false, defaultValue = "0") @Min(0) Integer page,
+                                                       @RequestParam(required = false) List<String> countries,
+                                                       @RequestParam(required = false) List<String> genres,
+                                                       @RequestParam(required = false) List<String> languages,
+                                                       @RequestParam(required = false) List<String> rated) {
+        return new ResponseEntity<>(moviesService.searchForMovie(text, getFacetsMap(countries, genres, languages, rated), MOVIES_PER_PAGE, MOVIES_PER_PAGE * (page - 1)), HttpStatus.OK);
+    }
+
+    private Map<String, List<String>> getFacetsMap(@RequestParam(required = false) List<String> countries, @RequestParam(required = false) List<String> genres, @RequestParam(required = false) List<String> languages, @RequestParam(required = false) List<String> rated) {
+        Map<String, List<String>> facets = new HashMap<>();
+        if (countries != null) {
+            facets.put("countries", countries);
+        }
+        if (genres != null) {
+            facets.put("genres", genres);
+        }
+        if (languages != null) {
+            facets.put("languages", languages);
+        }
+        if (rated != null) {
+            facets.put("rated", rated);
+        }
+        return facets;
     }
 
     @GetMapping("/facet-info")

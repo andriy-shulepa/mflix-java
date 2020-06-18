@@ -2,21 +2,26 @@ package com.andriy96s.mflixjava.backend.repository;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.*;
-import com.mongodb.client.model.*;
+import com.mongodb.client.model.Facet;
+import com.mongodb.client.model.Filters;
+import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.gte;
-import static com.mongodb.client.model.Filters.nin;
+import static com.mongodb.client.model.Filters.in;
 
 @Component
 public class MoviesRepository {
@@ -54,8 +59,8 @@ public class MoviesRepository {
         return moviesCollection.find(query).first();
     }
 
-    public List<Document> searchForMovie(String searchText, int limit, int skip, Bson sort) {
-        Bson query = Filters.text(searchText);
+    public List<Document> searchForMovie(String searchText, Map<String, List<String>> facets, int limit, int skip, Bson sort) {
+        Bson query = getBsonQuery(searchText, facets);
 
         FindIterable<Document> movieDocs = moviesCollection
                 .find(query)
@@ -66,10 +71,34 @@ public class MoviesRepository {
         return toDocumentsList(movieDocs.iterator());
     }
 
-    public long getMoviesCount(String searchText) {
-        return searchText == null ?
-                moviesCollection.countDocuments() :
-                moviesCollection.countDocuments(Filters.text(searchText));
+    private Bson getBsonQuery(String searchText, @NotNull Map<String, List<String>> facets) {
+        Bson query = new BsonDocument();
+        if (!StringUtils.isEmpty(searchText)) {
+            query = Filters.text(searchText);
+        }
+
+        for (String facet : facets.keySet()) {
+            switch (facet) {
+                case "genres":
+                    query = Filters.and(query, in("genres", facets.get("genres")));
+                    break;
+                case "rated":
+                    query = Filters.and(query, in("rated", facets.get("rated")));
+                    break;
+                case "countries":
+                    query = Filters.and(query, in("countries", facets.get("countries")));
+                    break;
+                case "languages":
+                    query = Filters.and(query, in("languages", facets.get("languages")));
+                    break;
+            }
+        }
+        return query;
+    }
+
+
+    public long getMoviesCount(String searchText, Map<String, List<String>> facets) {
+        return moviesCollection.countDocuments(getBsonQuery(searchText, facets));
     }
 
     public List<Document> getFacetInfo() {
@@ -103,5 +132,4 @@ public class MoviesRepository {
                         sortByCount("$languages"),
                         match(gte("count", 3))));
     }
-
 }

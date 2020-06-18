@@ -9,6 +9,7 @@ import com.mongodb.client.model.Sorts;
 import org.bson.Document;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class MoviesService {
 
         MoviesResultDto result = new MoviesResultDto();
         result.setMoviesPaginated(basicMovieDtos);
-        result.setTotalMoviesCount(moviesRepository.getMoviesCount(null));
+        result.setTotalMoviesCount(moviesRepository.getMoviesCount(null, Collections.emptyMap()));
 
         return result;
     }
@@ -38,21 +39,20 @@ public class MoviesService {
         );
     }
 
-    public MoviesResultDto searchForMovie(String searchText, int moviesPerPage, int moviesToSkp) {
+    public MoviesResultDto searchForMovie(String searchText, Map<String, List<String>> facets, int moviesPerPage, int moviesToSkp) {
         List<BasicMovieDto> basicMovieDtos = MovieMapper.toBasicMovieDtos(
-                moviesRepository.searchForMovie(searchText, moviesPerPage, moviesToSkp, Sorts.descending("imdb.rating")));
+                moviesRepository.searchForMovie(searchText, facets, moviesPerPage, moviesToSkp, Sorts.descending("imdb.rating")));
 
         MoviesResultDto result = new MoviesResultDto();
         result.setMoviesPaginated(basicMovieDtos);
-        result.setTotalMoviesCount(moviesRepository.getMoviesCount(searchText));
+        result.setTotalMoviesCount(moviesRepository.getMoviesCount(searchText, facets));
 
         return result;
     }
 
     public Map<String, ?> getFacetInfo() {
         Document facetInfo = moviesRepository.getFacetInfo().get(0);
-
-
+        
         Map<String, Object> results = new HashMap<>();
 
         results.put("genres", facetInfo.get("genres"));
