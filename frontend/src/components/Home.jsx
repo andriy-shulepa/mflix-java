@@ -3,6 +3,8 @@ import Pagination from "./Pagination";
 import React from "react";
 import Search from "./Search";
 import Facets from "./Facets";
+import {isNonEmptyArray} from "../utils/CommonUtils";
+
 
 class Home extends React.Component {
 
@@ -15,12 +17,16 @@ class Home extends React.Component {
             isLoaded: false,
             movies: [],
             error: null,
-            currentPage: 1
-        }
+            currentPage: 1,
+            selectedItems: {},
+            searchText: ""
+        };
+
+        this.updateSelectedItems = this.updateSelectedItems.bind(this);
     }
 
     componentDidMount() {
-        this.getMovies(null, 1);
+        this.getMovies(1);
     }
 
     renderMovieCard(movie) {
@@ -34,7 +40,7 @@ class Home extends React.Component {
     render() {
         const {error, isLoaded, movies} = this.state;
         if (error) {
-            return <div className="text-danger">Error: {error}</div>
+            return <div className="text-danger">Error: {error.toString()}</div>
         }
 
         if (!isLoaded) {
@@ -43,12 +49,15 @@ class Home extends React.Component {
             return (
                 <div className="p-4">
                     <div className="mb-2">
-                        <Search onClick={(text) => this.getMovies(text, 1)}/>
+                        <Search onClick={() => this.getMovies(1)}
+                                onTextChange={(event) => this.setState({searchText: event.target.value})}/>
                     </div>
                     <div className="container">
                         <div className="row">
                             <div className="col-lg-3">
-                                <Facets/>
+                                <Facets onClick={(facets) => this.getMovies(1)}
+                                        selectedItems={this.state.selectedItems}
+                                        updateSelectedItems={this.updateSelectedItems}/>
                             </div>
                             <div className="col-lg-9">
                                 <h4>Total movies found: {this.state.totalCount}</h4>
@@ -59,7 +68,7 @@ class Home extends React.Component {
                         </div>
                     </div>
                     <div className="container py-3 align-content-center">
-                        <Pagination onClick={(i) => this.getMovies(this.state.search, i)}
+                        <Pagination onClick={(i) => this.getMovies(i)}
                                     currentPage={this.state.currentPage}
                                     totalCount={this.state.totalCount}
                                     moviesPerPage={this.MOVIES_PER_PAGE}/>
@@ -68,8 +77,8 @@ class Home extends React.Component {
             )
     }
 
-    getMovies(search, page) {
-        this.fetchMovies(search, page)
+    getMovies(page) {
+        this.fetchMovies(this.state.searchText, page, this.state.selectedItems)
             .then(res => res.json())
             .then(
                 (result) => {
@@ -78,7 +87,6 @@ class Home extends React.Component {
                         movies: result.moviesPaginated,
                         totalCount: result.totalMoviesCount,
                         currentPage: page,
-                        search: search,
                     });
                 },
                 (error) => {
@@ -86,18 +94,37 @@ class Home extends React.Component {
                         isLoaded: true,
                         error: error,
                         currentPage: page,
-                        search: search,
                     });
                 }
             )
     }
 
-    fetchMovies(search, page) {
-        if (search) {
-            return fetch("http://localhost:8080/api/movies/search?text=" + search + "&page=" + page);
+    fetchMovies(search, page, facets) {
+        let facetString = this.buildFacetQuery(facets);
+        console.log("facetString: " + facetString);
+        let searchString = search ? "&text=" + search : "";
+        console.log("searchString: " + searchString);
+        if (search || facets) {
+            return fetch("http://localhost:8080/api/movies/search?page=" + page + searchString + facetString);
         } else {
             return fetch("http://localhost:8080/api/movies/page/" + page);
         }
+    }
+
+    updateSelectedItems(newSelectedItems) {
+        this.setState({
+            selectedItems: newSelectedItems
+        });
+    }
+
+    buildFacetQuery(facets) {
+        if (!facets) return "";
+        let facetQuery = "";
+        facetQuery += isNonEmptyArray(facets.countries) ? "&countries=" + facets.countries : "";
+        facetQuery += isNonEmptyArray(facets.genres) ? "&genres=" + facets.genres : "";
+        facetQuery += isNonEmptyArray(facets.languages) ? "&languages=" + facets.languages : "";
+        facetQuery += isNonEmptyArray(facets.rated) ? "&rated=" + facets.rated : "";
+        return facetQuery;
     }
 }
 
