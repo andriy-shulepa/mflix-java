@@ -17,3 +17,11 @@ code {
   display: -webkit-flex;
   flex-wrap: wrap;
 }
+
+.card-info:not(:hover) {
+ opacity: 0;
+}
+
+.card-info:hover {
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0,1),rgba(0, 0, 0,0.75), rgba(255,0,0,0));
+}

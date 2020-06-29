@@ -55,7 +55,7 @@ class Home extends React.Component {
                     <div className="container">
                         <div className="row">
                             <div className="col-lg-3">
-                                <Facets onClick={(facets) => this.getMovies(1)}
+                                <Facets onClick={() => this.getMovies(1)}
                                         selectedItems={this.state.selectedItems}
                                         updateSelectedItems={this.updateSelectedItems}/>
                             </div>
