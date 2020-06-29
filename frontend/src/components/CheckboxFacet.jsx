@@ -58,7 +58,7 @@ class CheckboxFacet extends React.Component {
     showMore(event) {
         event.preventDefault();
         this.state.itemsToShow === INITIAL_ELEMENTS_COUNT ? (this.setState({
-            itemsToShow: this.props.facetItems.length / 2,
+            itemsToShow: Math.ceil(this.props.facetItems.length / 2),
             expanded: false
         })) : this.state.itemsToShow === this.props.facetItems.length ? (
             this.setState({itemsToShow: 5, expanded: false})
@@ -67,7 +67,7 @@ class CheckboxFacet extends React.Component {
 
     calculateRemainingItems() {
         return this.state.itemsToShow === INITIAL_ELEMENTS_COUNT ?
-            this.props.facetItems.length / 2 - INITIAL_ELEMENTS_COUNT
+            Math.ceil(this.props.facetItems.length / 2) - INITIAL_ELEMENTS_COUNT
             : this.props.facetItems.length - this.state.itemsToShow;
     }
 }
