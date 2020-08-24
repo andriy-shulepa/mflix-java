@@ -60,7 +60,6 @@ class Facets extends React.Component {
                                        facetItems={this.state.facetInfo.rated}
                                        handleCheckboxClick={this.handleCheckboxClick}/>
                     </fieldset>
-                    <button className="btn btn-primary" onClick={this.handleSubmit}>Apply filters</button>
                 </form>
             </div>
         )
@@ -80,11 +79,12 @@ class Facets extends React.Component {
         let newSelectedItems = this.props.selectedItems;
         newSelectedItems[facetName] = newItems;
         this.props.updateSelectedItems(newSelectedItems);
+        this.props.onClick();
     }
 
     handleSubmit(event) {
         event.preventDefault();
-        this.props.onClick(this.state.selectedItems);
+        this.props.onClick();
     }
 }
 
