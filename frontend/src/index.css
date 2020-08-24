@@ -25,3 +25,11 @@ code {
 .card-info:hover {
   background-image: linear-gradient(to bottom, rgba(0, 0, 0,1),rgba(0, 0, 0,0.75), rgba(255,0,0,0));
 }
+
+.badge > .close {
+  margin-left: .25rem;
+  color: inherit;
+  font-size: 100%;
+  text-shadow: 0 1px 0 rgba(255,255,255 0.5);
+}
+

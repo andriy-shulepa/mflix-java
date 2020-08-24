@@ -4,6 +4,7 @@ import React from "react";
 import Search from "./Search";
 import Facets from "./Facets";
 import {isNonEmptyArray} from "../utils/CommonUtils";
+import SelectedFilter from "./SelectedFilter";
 
 
 class Home extends React.Component {
@@ -60,6 +61,9 @@ class Home extends React.Component {
                                         updateSelectedItems={this.updateSelectedItems}/>
                             </div>
                             <div className="col-lg-9">
+                                <div>
+                                    {this.renderCurrentFilters()}
+                                </div>
                                 <h4>Total movies found: {this.state.totalCount}</h4>
                                 <div className="row">
                                     {movies.map(movie => this.renderMovieCard(movie))}
@@ -75,6 +79,22 @@ class Home extends React.Component {
                     </div>
                 </div>
             )
+    }
+
+    renderCurrentFilters() {
+        if (!this.state.selectedItems || !this.state.isLoaded) {
+            return;
+        }
+
+        let selectedFilters = [];
+
+        for (const filterCategory in this.state.selectedItems) {
+            this.state.selectedItems[filterCategory].map(
+                filter => selectedFilters.push(
+                    <SelectedFilter
+                        filterName={filter}/>))
+        }
+        return selectedFilters;
     }
 
     getMovies(page) {
