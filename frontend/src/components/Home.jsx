@@ -24,6 +24,7 @@ class Home extends React.Component {
         };
 
         this.updateSelectedItems = this.updateSelectedItems.bind(this);
+        this.removeFromCurrentFilters = this.removeFromCurrentFilters.bind(this);
     }
 
     componentDidMount() {
@@ -92,9 +93,25 @@ class Home extends React.Component {
             this.state.selectedItems[filterCategory].map(
                 filter => selectedFilters.push(
                     <SelectedFilter
-                        filterName={filter}/>))
+                        filterName={filter}
+                        filterCategory={filterCategory}
+                        onClick={this.removeFromCurrentFilters}/>))
         }
         return selectedFilters;
+    }
+
+    removeFromCurrentFilters(filterCategory, filterName) {
+        let newSelectedItems = this.state.selectedItems;
+        let selectedCategory = newSelectedItems[filterCategory];
+        let index = selectedCategory.indexOf(filterName);
+        selectedCategory.splice(index, 1);
+
+        newSelectedItems[filterCategory] = selectedCategory;
+
+        this.setState({
+            selectedItems: newSelectedItems
+        });
+        this.getMovies(1);
     }
 
     getMovies(page) {

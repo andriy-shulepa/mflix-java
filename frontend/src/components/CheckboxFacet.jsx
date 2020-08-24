@@ -43,7 +43,10 @@ class CheckboxFacet extends React.Component {
         return (
             <div className="form-check" key={item._id}>
                 <label className="form-check-label">
-                    <input className="form-check-input" type="checkbox" value={item._id}
+                    <input className="form-check-input"
+                           type="checkbox"
+                           checked={this.props.selectedItems && this.props.selectedItems.includes(item._id)}
+                           value={item._id}
                            onChange={this.handleCheckboxClick}/>
                     {item._id}
                 </label>

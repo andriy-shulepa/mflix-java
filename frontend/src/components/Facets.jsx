@@ -49,15 +49,19 @@ class Facets extends React.Component {
                     <fieldset>
                         <CheckboxFacet facetName={"countries"}
                                        facetItems={this.state.facetInfo.countries}
+                                       selectedItems={this.props.selectedItems['countries']}
                                        handleCheckboxClick={this.handleCheckboxClick}/>
                         <CheckboxFacet facetName={"genres"}
                                        facetItems={this.state.facetInfo.genres}
+                                       selectedItems={this.props.selectedItems['genres']}
                                        handleCheckboxClick={this.handleCheckboxClick}/>
                         <CheckboxFacet facetName={"languages"}
                                        facetItems={this.state.facetInfo.languages}
+                                       selectedItems={this.props.selectedItems['languages']}
                                        handleCheckboxClick={this.handleCheckboxClick}/>
                         <CheckboxFacet facetName={"rated"}
                                        facetItems={this.state.facetInfo.rated}
+                                       selectedItems={this.props.selectedItems['rated']}
                                        handleCheckboxClick={this.handleCheckboxClick}/>
                     </fieldset>
                 </form>
