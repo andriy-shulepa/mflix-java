@@ -16,7 +16,6 @@ class Facets extends React.Component {
         };
 
         this.handleCheckboxClick = this.handleCheckboxClick.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
 
@@ -83,12 +82,6 @@ class Facets extends React.Component {
         let newSelectedItems = this.props.selectedItems;
         newSelectedItems[facetName] = newItems;
         this.props.updateSelectedItems(newSelectedItems);
-        this.props.onClick();
-    }
-
-    handleSubmit(event) {
-        event.preventDefault();
-        this.props.onClick();
     }
 }
 

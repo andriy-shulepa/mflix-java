@@ -20,7 +20,8 @@ class Home extends React.Component {
             error: null,
             currentPage: 1,
             selectedItems: {},
-            searchText: ""
+            searchText: "",
+            isFiltersPresent: false
         };
 
         this.updateSelectedItems = this.updateSelectedItems.bind(this);
@@ -57,13 +58,18 @@ class Home extends React.Component {
                     <div className="container">
                         <div className="row">
                             <div className="col-lg-3">
-                                <Facets onClick={() => this.getMovies(1)}
-                                        selectedItems={this.state.selectedItems}
+                                <Facets selectedItems={this.state.selectedItems}
                                         updateSelectedItems={this.updateSelectedItems}/>
                             </div>
                             <div className="col-lg-9">
                                 <div>
                                     {this.renderCurrentFilters()}
+                                    {this.state.isFiltersPresent ?
+                                        <button className="btn btn-outline-secondary"
+                                                onClick={() => this.updateSelectedItems({})}>
+                                            Clear all filters
+                                        </button>
+                                        : ""}
                                 </div>
                                 <h4>Total movies found: {this.state.totalCount}</h4>
                                 <div className="row">
@@ -97,7 +103,15 @@ class Home extends React.Component {
                         filterCategory={filterCategory}
                         onClick={this.removeFromCurrentFilters}/>))
         }
+        // eslint-disable-next-line react/no-direct-mutation-state
+        this.state.isFiltersPresent = selectedFilters.length > 0;
         return selectedFilters;
+    }
+
+    updateSelectedItems(newSelectedItems) {
+        this.setState({
+            selectedItems: newSelectedItems
+        }, () => this.getMovies(1));
     }
 
     removeFromCurrentFilters(filterCategory, filterName) {
@@ -108,10 +122,7 @@ class Home extends React.Component {
 
         newSelectedItems[filterCategory] = selectedCategory;
 
-        this.setState({
-            selectedItems: newSelectedItems
-        });
-        this.getMovies(1);
+        this.updateSelectedItems(newSelectedItems)
     }
 
     getMovies(page) {
@@ -146,12 +157,6 @@ class Home extends React.Component {
         } else {
             return fetch("http://localhost:8080/api/movies/page/" + page);
         }
-    }
-
-    updateSelectedItems(newSelectedItems) {
-        this.setState({
-            selectedItems: newSelectedItems
-        });
     }
 
     buildFacetQuery(facets) {
